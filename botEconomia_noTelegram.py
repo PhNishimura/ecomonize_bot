@@ -37,7 +37,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(mensagem)
 
 #função que processa as mensagens de gastos
-async def processar_gastos(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def processar_gasto(update: Update, context: ContextTypes.DEFAULT_TYPE):
     texto_mensagem = update.message.text
     try:
         partes = [p.strip() for p in texto_mensagem.split(',')]
@@ -59,3 +59,54 @@ async def processar_gastos(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "valor": valor, 
             "data": data_str
         }
+
+        salvar_gasto(novo_gasto)
+
+        #calculando os gastos
+        gastos = carregar_gastos()
+        mes_atual = datetime.now().month
+        ano_atual = datetime.now().year
+        total_mes = 0.0 
+
+        for gasto in gastos: 
+            data_gasto = datetime.strftime(gasto['data'], '%d/%m/%Y')
+            if data_gasto.month == mes_atual and data_gasto.year == ano_atual:
+                total_mes += gasto['valor']
+
+        #mensagem para o usuario
+        resposta = (
+            f"✅ Gasto salvo com sucesso!\n"
+            f"Lugar: {lugar}\n"
+            f"Data: {data_str}\n\n"
+            f"💰 Total de gastos este mês: R$ {total_mes:.2f}"
+        )
+
+        await update.message.reply_text(resposta)
+
+    #mensagem de erro
+    except(ValueError, IndexError):
+        await update.message.reply_text(
+            "Erro! Não consegui entender sua mensagem"
+        )
+
+
+#Configuração do bot
+def main():
+    TOKEN = "SeuBotToken"
+    #cria a aplicação do bot com o token colocado
+    application = Application.builder().token(TOKEN).build
+
+    #recebe o /start e executa a função start
+    application.add_handler(CommandHandler("start", start))
+
+    #quando receber o texto normal, execute a função processar gasto
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, processar_gasto))
+
+    #iniciando bot 
+    print("Bot iniciado....")
+    application.run_polling()
+
+
+#iniciando a main
+if __name__ == '__main__':
+    main()
