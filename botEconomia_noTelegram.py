@@ -83,6 +83,20 @@ async def processar_gasto(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         await update.message.reply_text(resposta)
 
+        #verificação de limite
+        limite_de_gastos = 800.0
+
+        total_anterior = total_mes - valor 
+
+        if total_mes > limite_de_gastos and total_anterior <= limite_de_gastos:
+            mensagem_de_aviso = (
+                f"⚠️ ATENÇÃO! ⚠️\n\n"
+                f"Você ultrapassou seu limite de gastos de R$ {limite_de_gastos:.2f} para este mês!"
+            )
+        
+        #envia mensagem para o usuario
+        await update.message.reply_text(mensagem_de_aviso)
+
     #mensagem de erro
     except(ValueError, IndexError):
         await update.message.reply_text(
