@@ -167,7 +167,7 @@ async def extrato(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # Configuração do bot
 def main():
-    TOKEN = "8371830638:AAH8_BIlwHMVhk2F-aqm9nRWhcEuskkeqWo"
+    TOKEN = "SeuToken"
     # cria a aplicação do bot com o token colocado
     application = Application.builder().token(TOKEN).build()
 
